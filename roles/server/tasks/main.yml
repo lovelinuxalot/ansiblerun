@@ -83,4 +83,5 @@
   with_items:
    - "aws rds --region eu-west-1 describe-db-instances --query 'DBInstances[*].Endpoint.Address' |  awk {'print $2'} | sed -e 's/^\"//' -e 's/\"$//'"
   register: output
-- debug: output.stdout_lines
+- debug: var=output
+- debug: msg="{{ output.results[0].stdout_lines }}"

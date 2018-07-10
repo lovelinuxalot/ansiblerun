@@ -64,7 +64,6 @@
     dest: "{{ item }}"
     state: absent
   with_items:
-<<<<<<< HEAD
    - "/etc/apache2/sites-enabled/000-default.conf"
    - "/var/www/html/index.html"
 
@@ -82,9 +81,3 @@
   file: dest='{{ web_user_home }}' owner='{{ web_user }}' group='{{ web_group }}' mode=u=rwX,g=rX,o= recurse=yes
   notify:
     - Restart Apache
-=======
-   - "aws rds --region eu-west-1 describe-db-instances --query 'DBInstances[*].Endpoint.Address' |  awk {'print $2'} | sed -e 's/^\"//' -e 's/\"$//'"
-  register: output
-- debug: var=output
-- debug: msg="{{ output.results[0].stdout_lines }}"
->>>>>>> 7344eafd81190db3b9a7383949b53b188dff660e

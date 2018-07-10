@@ -1,3 +1,6 @@
 web_group: http-web
 web_user: http-web
 web_user_home: /var/www/html
+rds_name: sretestdb.olxtest.com
+rds_db: webserver
+rds_user: webserveruser

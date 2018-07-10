@@ -1,86 +1,83 @@
+- include: secrets.yml
+
 - name: Update apt cache
   apt: update_cache=yes cache_valid_time=3600
   become: yes
 
-# - name: Install required software
-#   apt: name={{ item }} state=present
-#   become: yes
-#   with_items:
-#     - apache2
-#     - php-mysql
-#     - php
-#     - libapache2-mod-php
-#     - python-mysqldb
-#     - libapache2-modsecurity
-#
-# - name: Add group
-#   group:
-#     name: '{{ web_group }}'
-#     state: present
-#
-# - name: Add the user
-#   user:
-#     name: '{{ web_user }}'
-#     shell: /bin/nologin
-#     group: '{{ web_group }}'
-#     home: '{{ web_user_home }}'
-#
-# - name: Enable apache modsecurity module
-#   apache2_module:
-#     state: present
-#     name: security2
-#
-# - name: Remove existing modsecurity config
-#   file:
-#     dest: /etc/modsecurity/modsecurity.conf{-recommended,}
-#     state: absent
-#
-# - name: Add the updated modsecurity config
-#   template:
-#     src: "modsecurity.conf.j2"
-#     dest: "/etc/modsecurity/modsecurity.conf"
-#   notify:
-#     - Reload Apache
-#
-# - name: Add default activated_rules
-#   file:
-#     src: /usr/share/modsecurity-crs/base_rules/modsecurity_crs_41_sql_injection_attacks.conf
-#     dest: /usr/share/modsecurity-crs/activated_rules/modsecurity_crs_41_sql_injection_attacks.conf
-#     state: link
-#   notify:
-#     - Reload Apache
-#
-# - name: Write the modified apache2.conf
-#   template:
-#     src: "apache2.conf.j2"
-#     dest: "/etc/apache2/apache2.conf"
-#   notify:
-#     - Restart Apache
-#
-# - name: Delete the default unnecessary files
-#   file:
-#     dest: "{{ item }}"
-#     state: absent
-#   with_items:
-#    - "/etc/apache2/sites-enabled/000-default.conf"
-#    - "/var/www/html/index.html"
-#
-# - name: Add index.html file
-#   template:
-#     src: "index.html.j2"
-#     dest: "/var/www/html/index.html"
-#
-# - name: Copy VirtualHost
-#   template:
-#     src: "000-default.conf.j2"
-#     dest: "/etc/apache2/sites-enabled/000-default.conf"
-#
-# - name: Change folder permissions
-#   file: dest='{{ web_user_home }}' owner='{{ web_user }}' group='{{ web_group }}' mode=u=rwX,g=rX,o= recurse=yes
-
-- name: Get RDS instance Name
-  shell: "{{ item }}"
+- name: Install required software
+  apt: name={{ item }} state=present
+  become: yes
   with_items:
-   - "aws rds --region eu-west-1 describe-db-instances --query 'DBInstances[*].Endpoint.Address' |  awk {'print $2'} | sed -e 's/^\"//' -e 's/\"$//'"
-  register: output
-- debug: output
+    - apache2
+    - php-mysql
+    - php
+    - libapache2-mod-php
+    - python-mysqldb
+    - libapache2-modsecurity
+
+- name: Add group
+  group:
+    name: '{{ web_group }}'
+    state: present
+
+- name: Add the user
+  user:
+    name: '{{ web_user }}'
+    shell: /bin/nologin
+    group: '{{ web_group }}'
+    home: '{{ web_user_home }}'
+
+- name: Enable apache modsecurity module
+  apache2_module:
+    state: present
+    name: security2
+
+- name: Remove existing modsecurity config
+  file:
+    dest: /etc/modsecurity/modsecurity.conf{-recommended,}
+    state: absent
+
+- name: Add the updated modsecurity config
+  template:
+    src: "modsecurity.conf.j2"
+    dest: "/etc/modsecurity/modsecurity.conf"
+  notify:
+    - Reload Apache
+
+- name: Add default activated_rules
+  file:
+    src: /usr/share/modsecurity-crs/base_rules/modsecurity_crs_41_sql_injection_attacks.conf
+    dest: /usr/share/modsecurity-crs/activated_rules/modsecurity_crs_41_sql_injection_attacks.conf
+    state: link
+  notify:
+    - Reload Apache
+
+- name: Write the modified apache2.conf
+  template:
+    src: "apache2.conf.j2"
+    dest: "/etc/apache2/apache2.conf"
+  notify:
+    - Restart Apache
+
+- name: Delete the default unnecessary files
+  file:
+    dest: "{{ item }}"
+    state: absent
+  with_items:
+   - "/etc/apache2/sites-enabled/000-default.conf"
+   - "/var/www/html/index.html"
+
+- name: Add index.html file
+  template:
+    src: "index.html.j2"
+    dest: "/var/www/html/index.html"
+
+- name: Copy VirtualHost
+  template:
+    src: "000-default.conf.j2"
+    dest: "/etc/apache2/sites-enabled/000-default.conf"
+
+- name: Change folder permissions
+  file: dest='{{ web_user_home }}' owner='{{ web_user }}' group='{{ web_group }}' mode=u=rwX,g=rX,o= recurse=yes
+  notify:
+    - Restart Apache
